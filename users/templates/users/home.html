@@ -1,0 +1,119 @@
+{% extends 'users/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="flex justify-center mt-10 space-x-6">
+
+  <!-- Left Card: Friends List -->
+  <div class="w-1/3 bg-white shadow-lg rounded-2xl p-5">
+    <h2 class="text-xl font-bold mb-4 text-purple-500">Your Friends</h2>
+    <div class="space-y-4">
+      {% for friend in friends %}
+        <div class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100" onclick="openChat('{{ friend.id }}','{{ friend.name }}')">
+          <img src="{{ friend.icon }}" alt="{{ friend.name }} profile_pic"
+               class="w-12 h-12 rounded-full border">
+          <span class="text-lg font-medium">{{ friend.name }}</span>
+        </div>
+      {% empty %}
+        <p class="text-gray-500">No friends yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+
+<!-- Right Chat Card -->
+    <div id="chat-box" class="w-2/3 bg-white shadow-lg rounded-2xl p-5">
+      <h2 id="chat-title" class="text-xl font-bold mb-4 text-gray-800">
+        Select a friend to start chatting
+      </h2>
+
+      <!-- Chat Messages -->
+      <div id="messages" class="h-80 overflow-y-auto border rounded-lg p-3 bg-gray-50">
+        <p class="text-gray-400">No chat selected.</p>
+      </div>
+
+      <!-- Input Box (only visible after selecting a friend) -->
+      <form id="chat-form" class="mt-3 flex hidden">
+        <input id="chat-message-input" type="text" placeholder="Type a message..."
+               class="flex-1 border rounded-l-lg p-2 focus:outline-none">
+        <button id="chat-message-submit" type="submit"
+                class="bg-blue-500 text-white px-4 rounded-r-lg">Send</button>
+      </form>
+    </div>
+
+
+</div>
+
+<script>
+    let chatSocket = null;
+    let selectedFriendId = null;
+    let sender_id  = '{{ user_obj.id }}';
+
+    function openChat(friendId, friendName) {
+        selectedFriendId = friendId;
+        document.getElementById("chat-title").innerHTML =
+            `Chat with <span class="text-purple-700 font-semibold">${friendName}</span>`;
+        document.getElementById("messages").innerHTML = "";
+        document.getElementById("chat-form").classList.remove("hidden");
+
+        if (chatSocket) {
+            chatSocket.close();
+        }
+
+        const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+        chatSocket = new WebSocket(protocol + window.location.host + `/ws/chat/${sender_id}/${selectedFriendId}/`);
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const msgBox = document.getElementById("messages");
+            const msg = document.createElement("div");
+
+            if (data.sender == sender_id) {
+                // Current user → right side
+                msg.className = "mb-2 flex justify-end";
+                msg.innerHTML = `
+                    <span class="inline-block px-3 py-2 rounded-lg bg-blue-500 text-white">
+                        ${data.message}
+                    </span>
+                `;
+            } else {
+                // Friend → left side
+                msg.className = "mb-2 flex justify-start";
+                msg.innerHTML = `
+                    <span class="inline-block px-3 py-2 rounded-lg bg-gray-300 text-black">
+                        ${data.message}
+                    </span>
+                `;
+            }
+
+            msgBox.append(msg);
+            msgBox.scrollTop = msgBox.scrollHeight;
+        };
+
+
+        chatSocket.onclose = function(e) {
+            console.error("Chat socket closed unexpectedly", e);
+        };
+
+        chatSocket.onerror = function(e) {
+            console.error("Chat socket error:", e);
+        };
+    }
+
+    // Attach only once
+    document.getElementById("chat-form").onsubmit = function (e) {
+        e.preventDefault();
+        const input = document.getElementById("chat-message-input");
+        if (input.value.trim() !== "" && chatSocket && selectedFriendId) {
+            chatSocket.send(JSON.stringify({
+                type: 'message',
+                sender: sender_id,
+                receiver: selectedFriendId,
+                message: input.value
+            }));
+            input.value = "";
+        }
+    };
+</script>
+
+{% endblock %}

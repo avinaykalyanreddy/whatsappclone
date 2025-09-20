@@ -1,0 +1,30 @@
+{% extends 'users/base.html' %}
+{% load humanize %}
+{% load static %}
+
+
+
+{% block body %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-xl">
+
+        <h1 class="text-2xl font-bold text-center text-purple-700 mb-6">
+            Newly Created Users
+        </h1>
+
+        <div class="space-y-4">
+            {% for user in latest_users %}
+                <div class="flex items-center space-x-4 p-4 border rounded-lg hover:bg-purple-50 transition">
+                    <img src="{{ user.icon }}" class="w-14 h-14 rounded-full border-2 border-purple-500 object-cover">
+
+                    <div>
+                        <p class="text-lg font-semibold text-gray-800">{{ user.name }}</p>
+                        <p class="text-sm text-gray-500">{{ user.created_at|naturaltime }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

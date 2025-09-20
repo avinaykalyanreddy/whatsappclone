@@ -1,0 +1,101 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VOX</title>
+    <link rel="icon" href="{% static 'users/images/logo.png'  %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+    <nav class="shadow-lg p-5">
+
+        <div class="container flex justify-between items-center mx-auto">
+
+
+            <a href="" class="flex items-center">
+
+                <img class="h-10 mr-3" alt="LOGO" src="{% static 'users/images/logo.png'  %}" >
+                <span class="self-center text-xl font-semibold">VOX</span>
+
+            </a>
+
+
+
+
+            <div class="flex items-center space-x-4">
+
+              {% if user_obj %}
+
+                         <!-- Profile Image -->
+                  <img src="{{ user_obj.icon }}"
+                       alt="{{ user_obj.name }}_profile_pic"
+                       class="w-12 h-12 rounded-full border-2 border-purple-500 object-cover">
+
+                         <!-- User Name -->
+                  <span class="text-gray-800 font-medium">
+                     <b>{{ user_obj.name }}</b>
+                  </span>
+
+               <a href="{% url 'users:logout' %}" class="flex items-center space-x-2">
+                    <span class="text-red-500">Logout</span> <img class="w-6 h-6 object-cover" src="{% static 'users/images/logout.png' %}" alt="logout">
+
+                </a>
+
+
+              {% else %}
+                <a href="{% url 'users:login' %}">Login</a>
+                <a href="{% url 'users:signup' %}">Sign Up</a>
+
+              {% endif %}
+
+
+
+            </div>
+
+
+        </div>
+
+    </nav>
+
+    {% if messages %}
+        <div class="fixed top-20 right-4 space-y-2 z-50">
+
+                {% for message in messages %}
+
+                        <div class="px-4 py-2 rounded-lg shadow-md
+                                     {% if message.tags == 'success' %} bg-green-500 text-white
+                                     {% elif message.tags == 'error' %} bg-red-500 text-white
+                                      {% elif message.tags == 'warning' %}  bg-yellow-500 text-black
+                                        {% endif %}
+                                    message ">
+                                {{ message }}
+                        </div>
+
+                {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+{% block body %}
+
+
+{% endblock %}
+
+    <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        setTimeout(() => {
+                            document.querySelectorAll(".message").forEach(msg => {
+                                msg.style.display = "none";
+                            });
+                        }, 10000);
+                    });
+    </script>
+
+</body>
+</html>
