@@ -49,10 +49,20 @@
     let selectedFriendId = null;
     let sender_id  = '{{ user_obj.id }}';
 
+    function formatDateTime(isoString) {
+        const date = new Date(isoString);
+        return date.toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
     function openChat(friendId, friendName) {
         selectedFriendId = friendId;
-        document.getElementById("chat-title").innerHTML =
-            `Chat with <span class="text-purple-700 font-semibold">${friendName}</span>`;
+        document.getElementById("chat-title").innerHTML = `Chat with <span class="text-purple-700 font-semibold">${friendName}</span>`;
         document.getElementById("messages").innerHTML = "";
         document.getElementById("chat-form").classList.remove("hidden");
 
@@ -68,28 +78,34 @@
             const msgBox = document.getElementById("messages");
             const msg = document.createElement("div");
 
+            let timeInfo = "";
+            if (data.created_at) {
+                timeInfo = `<div class="text-xs text-gray-500 mt-1">${formatDateTime(data.created_at)}</div>`;
+            }
+
             if (data.sender == sender_id) {
                 // Current user → right side
-                msg.className = "mb-2 flex justify-end";
+                msg.className = "mb-3 flex flex-col items-end";
                 msg.innerHTML = `
-                    <span class="inline-block px-3 py-2 rounded-lg bg-blue-500 text-white">
+                    <div class="inline-block px-3 py-2 rounded-lg bg-blue-500 text-white">
                         ${data.message}
-                    </span>
+                    </div>
+                    ${timeInfo}
                 `;
             } else {
                 // Friend → left side
-                msg.className = "mb-2 flex justify-start";
+                msg.className = "mb-3 flex flex-col items-start";
                 msg.innerHTML = `
-                    <span class="inline-block px-3 py-2 rounded-lg bg-gray-300 text-black">
+                    <div class="inline-block px-3 py-2 rounded-lg bg-gray-300 text-black">
                         ${data.message}
-                    </span>
+                    </div>
+                    ${timeInfo}
                 `;
             }
 
             msgBox.append(msg);
             msgBox.scrollTop = msgBox.scrollHeight;
         };
-
 
         chatSocket.onclose = function(e) {
             console.error("Chat socket closed unexpectedly", e);
@@ -115,5 +131,6 @@
         }
     };
 </script>
+
 
 {% endblock %}
