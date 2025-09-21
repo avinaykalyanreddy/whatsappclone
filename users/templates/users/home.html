@@ -2,6 +2,25 @@
 {% load static %}
 
 {% block body %}
+<div class="my-10 mx-3 flex items-center">
+  <!-- Input Box -->
+  <input
+      class="border w-96 h-12 px-4 rounded-l-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+      type="text"
+      placeholder="Add friends through mail id...." oninput="searchFriends()" id="search-friends">
+
+  <!-- Clear Button -->
+  <button
+      class="bg-gray-200 px-4 h-12 rounded-r-lg hover:bg-gray-300 text-gray-700 font-medium"
+      onclick="this.previousElementSibling.value = ''">
+      Clear
+  </button>
+</div>
+
+<div id="list-friends">
+
+</div>
+
 <div class="flex justify-center mt-10 space-x-6">
 
   <!-- Left Card: Friends List -->
@@ -48,6 +67,63 @@
     let chatSocket = null;
     let selectedFriendId = null;
     let sender_id  = '{{ user_obj.id }}';
+    let searchSocket = null;
+
+
+    function searchFriends() {
+        const searchBox = document.getElementById("search-friends");
+        const searchValue = searchBox.value.trim();
+
+        if (!searchSocket || searchSocket.readyState === WebSocket.CLOSED) {
+            const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            searchSocket = new WebSocket(protocol + window.location.host + `/ws/search-friends/${sender_id}/`);
+
+            // Send search when connection opens
+            searchSocket.onopen = function() {
+                if (searchValue !== "") {
+                    searchSocket.send(JSON.stringify({ search: searchValue }));
+                }
+            };
+
+            searchSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                console.log("Received data:", data);  // Add this
+                const listContainer = document.getElementById("list-friends");
+                listContainer.innerHTML = ""; // Clear previous results
+
+                if (data.friends && data.friends.length > 0) {
+                    data.friends.forEach(friend => {
+                        const friendDiv = document.createElement("div");
+                        friendDiv.className = "flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer";
+                        // friendDiv.onclick = () => openChat(friend.id, friend.name);
+                        friendDiv.innerHTML = `
+                            <img src="${friend.icon}" alt="${friend.name}" class="w-10 h-10 rounded-full border">
+                            <span class="text-lg font-medium">${friend.name}</span>
+                        `;
+                        listContainer.appendChild(friendDiv);
+                    });
+                } else {
+                    listContainer.innerHTML = "<p class='text-gray-500'>No friends found.</p>";
+                }
+            };
+
+
+            searchSocket.onclose = function(e) {
+                console.error("Search socket closed unexpectedly", e);
+            };
+
+            searchSocket.onerror = function(e) {
+                console.error("Search socket error:", e);
+            };
+        } else {
+            // If socket is already open, just send the query
+            if (searchValue !== "") {
+                searchSocket.send(JSON.stringify({ search: searchValue }));
+            }
+        }
+    }
+
+
 
     function formatDateTime(isoString) {
         const date = new Date(isoString);
