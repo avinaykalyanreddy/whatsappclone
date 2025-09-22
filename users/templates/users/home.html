@@ -83,6 +83,9 @@
                 if (searchValue !== "") {
                     searchSocket.send(JSON.stringify({ search: searchValue }));
                 }
+                else{
+                    document.getElementById("list-friends").innerHTML = "";
+                }
             };
 
             searchSocket.onmessage = function(e) {
@@ -96,10 +99,23 @@
                         const friendDiv = document.createElement("div");
                         friendDiv.className = "flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer";
                         // friendDiv.onclick = () => openChat(friend.id, friend.name);
+
+                        if(friend.is_friend){
+
+                            friendDiv.innerHTML = `
+                            <img src="${friend.icon}" alt="${friend.name}" class="w-10 h-10 rounded-full border">
+                            <span class="text-lg font-medium">${friend.name}</span> <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">Already Connected</span>
+`;
+
+                        }
+
+                        else{
                         friendDiv.innerHTML = `
                             <img src="${friend.icon}" alt="${friend.name}" class="w-10 h-10 rounded-full border">
-                            <span class="text-lg font-medium">${friend.name}</span>
+                            <span class="text-lg font-medium">${friend.name}</span> 
+                            <button class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-full">Add Friend</button>
                         `;
+                        }
                         listContainer.appendChild(friendDiv);
                     });
                 } else {
@@ -120,6 +136,9 @@
             if (searchValue !== "") {
                 searchSocket.send(JSON.stringify({ search: searchValue }));
             }
+            else{
+                    document.getElementById("list-friends").innerHTML = "";
+                }4
         }
     }
 
