@@ -17,9 +17,24 @@
   </button>
 </div>
 
-<div id="list-friends">
 
+<div class="flex justify-between items-center p-4">
+    <div id="list-friends"></div>
+
+    <div class="relative">
+        <!-- Bell icon -->
+        <button id="bell" class="relative">
+            <img src="{% static 'users/images/bell.png' %}" alt="" class="w-13 h-10">
+        </button>
+
+        <!-- Notifications dropdown -->
+        <div id="notification" class="hidden absolute right-0 mt-2 w-64 bg-white border rounded-lg shadow-lg max-h-80 overflow-y-auto z-50">
+            <!-- Notifications will be inserted here -->
+        </div>
+    </div>
 </div>
+
+  
 
 <div class="flex justify-center mt-10 space-x-6">
 
@@ -69,7 +84,80 @@
     let sender_id  = '{{ user_obj.id }}';
     let searchSocket = null;
 
+    const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+    let notificationSocket = new WebSocket(protocol + window.location.host + `/ws/notifications/${sender_id}/`);
+    console.log(notificationSocket)
 
+    notificationSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.log("Notification:", data);
+
+            if (data.type === "notification") {
+                renderNotifications(data.message);
+            }
+        };
+
+        // Render notifications into dropdown
+        function renderNotifications(notifications) {
+            const container = document.getElementById("notification");
+            container.innerHTML = ""; // Clear old notifications
+
+            notifications.forEach(item => {
+                const div = document.createElement("div");
+                div.classList.add("flex", "items-center", "p-2", "hover:bg-gray-100", "cursor-pointer");
+
+                div.innerHTML = `
+                    <div id='${item.user_id}'>
+                        <img src="${item.icon}" alt="icon" class="w-8 h-8 rounded-full mr-2">
+                        <div class="flex flex-col">
+                            <span class="font-medium">${item.sender}</span>
+                            <span class="text-xs text-gray-500">${new Date(item.created_at).toLocaleString()}</span>
+                            <div class="flex space-x-2">
+                                <button class="accept-btn bg-green-500 text-white px-2 py-1 rounded text-sm" data-id="${item.user_id}" onclick="accept_reject('${item.user_id}',true)" >Accept</button>
+                                <button class="reject-btn bg-red-500 text-white px-2 py-1 rounded text-sm" data-id="${item.user_id}" onclick="accept_reject('${item.user_id}',false)" >Reject</button>
+                            </div>
+                            
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(div);
+            });
+        }
+
+        // Toggle dropdown when clicking bell
+        document.getElementById("bell").addEventListener("click", () => {
+            const box = document.getElementById("notification");
+            box.classList.toggle("hidden");
+        });
+
+    function accept_reject(friend_id,checker){
+        checker = checker.toString();
+        let accept_reject_socket  = new WebSocket(protocol + window.location.host + `/ws/accept-reject/${friend_id}/${sender_id}/${checker}/`); 
+
+        document.getElementById(friend_id).remove()
+
+        accept_reject_socket.close();
+        print("done")
+    }
+    function sendRequest(friend_id) {
+
+        const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+
+        const addfriendSocket = new WebSocket(protocol + window.location.host + `/ws/add-friend/${sender_id}/${friend_id}/`);
+
+        addfriendSocket.onmessage = function(e){
+
+            const data = JSON.parse(e.data);
+
+            
+
+            window.alert(data.message)
+            addfriendSocket.close();
+            
+
+        }
+        }
     function searchFriends() {
         const searchBox = document.getElementById("search-friends");
         const searchValue = searchBox.value.trim();
@@ -113,15 +201,17 @@
                         friendDiv.innerHTML = `
                             <img src="${friend.icon}" alt="${friend.name}" class="w-10 h-10 rounded-full border">
                             <span class="text-lg font-medium">${friend.name}</span> 
-                            <button class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-full">Add Friend</button>
+                            <button class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-full" onclick='sendRequest(${friend.user_id})' >Add Friend</button>
                         `;
                         }
                         listContainer.appendChild(friendDiv);
+                        
                     });
                 } else {
                     listContainer.innerHTML = "<p class='text-gray-500'>No friends found.</p>";
                 }
             };
+
 
 
             searchSocket.onclose = function(e) {

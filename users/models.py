@@ -29,3 +29,11 @@ class Messages(models.Model):
     receiver = models.ForeignKey(User,on_delete=models.CASCADE,related_name="receiver")
     content = models.TextField()
     created_at  = models.DateTimeField(auto_now_add=True)
+
+
+class FriendRequests(models.Model):
+
+    sender  = models.ForeignKey(User,on_delete=models.CASCADE,related_name="friend_request_sender")
+    receiver = models.ForeignKey(User,on_delete=models.CASCADE,related_name="friend_request_receiver")
+
+    created_at = models.DateTimeField(auto_now_add=True)
