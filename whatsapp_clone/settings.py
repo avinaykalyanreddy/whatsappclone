@@ -73,12 +73,33 @@ CHANNEL_LAYERS = {
 
 
 # Database
+"""
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",  # works with Path object
     }
 }
+"""
+import pymysql
+pymysql.install_as_MySQLdb()
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("DB_NAME", "defaultdb"),
+        "USER": os.getenv("DB_USER", "avnadmin"),
+        "PASSWORD": os.getenv("DB_PASSWORD", ""),
+        "HOST": os.getenv("DB_HOST", "mysql-1dc599b1-whatsappclone.h.aivencloud.com"),
+        "PORT": os.getenv("DB_PORT", "22360"),
+        "OPTIONS": {
+            "ssl": {
+                "ca": os.path.join(BASE_DIR, "certs", "ca.pem"),
+            }
+        },
+    }
+}
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -114,6 +135,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "godsons12072004@gmail.com"
 EMAIL_HOST_PASSWORD = "uqbx nnui cxyc qmsl"  # should ideally be in env vars
 """
+"""
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_PORT = 587
@@ -121,3 +143,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "apikey"  # must be the literal string "apikey"
 EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY")
 DEFAULT_FROM_EMAIL = "godsons12072004@gmail.com"
+"""
