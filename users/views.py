@@ -96,8 +96,11 @@ def signup(request):
                 user_obj.icon = choice(avatars)
                 user_obj.save()
 
-                send_signup_email(user_obj)
-                messages.success(request,f"Verification email has been sent successfully to {user_obj.email}. Please check your inbox to verify your account.")
+                if send_signup_email(user_obj):
+                    messages.success(request,f"Verification email has been sent successfully to {user_obj.email}. Please check your inbox to verify your account.")
+
+                else:
+                    messages.error(request,"Internal Server Error")
                 return redirect("users:login")
 
 
