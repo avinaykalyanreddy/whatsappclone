@@ -132,7 +132,11 @@ def send_signup_email(user_obj):
 
     return True
 
-  except :
+
+  except Exception as e:
+
+      print("Email sending failed:", e)
+
       return False
 
 
