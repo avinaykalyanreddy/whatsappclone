@@ -52,7 +52,11 @@ TEMPLATES = [
     },
 ]
 
-# ASGI application
+CSRF_TRUSTED_ORIGINS = [
+    "https://whatsappclone-rj09.onrender.com",
+    "http://localhost:8000",
+]
+
 
 
 # Channels / Redis
