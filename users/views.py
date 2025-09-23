@@ -98,14 +98,17 @@ def signup(request):
 
                 user_obj.password = make_password(password)
                 user_obj.icon = choice(avatars)
+                user_obj.is_verified = True
+                user_obj.token = "mail is not working"
                 user_obj.save()
 
-                if send_signup_email(user_obj):
+                """if send_signup_email(user_obj):
                     messages.success(request,f"Verification email has been sent successfully to {user_obj.email}. Please check your inbox to verify your account.")
                     messages.warning(request,"Check varification mail in span")
 
                 else:
                     messages.error(request,"Internal Server Error")
+                """
                 return redirect("users:login")
 
 
@@ -115,7 +118,7 @@ def signup(request):
 
     return render(request,"users/signup.html",{"form":form})
 
-
+"""
 def send_signup_email(user_obj):
 
   try:
@@ -159,3 +162,4 @@ def verify_signup_email(request,link):
 
     return HttpResponse("Link Expired")
 
+"""
