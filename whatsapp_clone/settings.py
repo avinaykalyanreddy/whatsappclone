@@ -53,15 +53,15 @@ TEMPLATES = [
 ]
 
 # ASGI application
-ASGI_APPLICATION = "whatsapp_clone.asgi.application"
+
 
 # Channels / Redis
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
-        # For production, use Redis backend
     }
 }
+
 
 # Database
 DATABASES = {
@@ -90,6 +90,8 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"  # for collectstatic
 STATICFILES_DIRS = [BASE_DIR / "static"]  # your app-level static files
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+ASGI_APPLICATION = "whatsapp_clone.asgi.application"
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

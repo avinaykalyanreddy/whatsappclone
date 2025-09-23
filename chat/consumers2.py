@@ -1,7 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-
+from django.shortcuts import redirect
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from mako.testing.assertions import assert_raises_with_given_cause
@@ -225,6 +225,11 @@ class AcceptFriendRequest(AsyncWebsocketConsumer):
         await self.accept()
 
         await self.delete_friend_request(self.sender_obj,self.receiver_obj,self.checker)
+
+        await self.send(json.dumps({
+
+            "redirect_url": '/home/'
+        }))
 
 
     @database_sync_to_async

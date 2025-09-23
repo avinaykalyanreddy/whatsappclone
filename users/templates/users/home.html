@@ -137,8 +137,13 @@
 
         document.getElementById(friend_id).remove()
 
-        accept_reject_socket.close();
-        print("done")
+        accept_reject_socket.onmessage = function(e){
+            data = JSON.parse(e.data);
+            window.location.href = data.redirect_url;
+            accept_reject_socket.close();
+        }
+
+   
     }
     function sendRequest(friend_id) {
 
