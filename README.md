@@ -2,7 +2,7 @@
 
 Welcome to our **Real-Time Chat Application**! This platform allows you to connect, chat, and stay in touch with your friends securely and efficiently.
 <br>
-<a href"https://whatsappclone-rj09.onrender.com/">https://whatsappclone-rj09.onrender.com/</a>
+<a href="https://whatsappclone-rj09.onrender.com/"> https://whatsappclone-rj09.onrender.com/ </a>
 
 ## Features
 
