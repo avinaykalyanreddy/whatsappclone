@@ -18,6 +18,7 @@ msgpack==1.1.1
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pycparser==2.23
+PyMySQL==1.1.2
 pyOpenSSL==25.3.0
 redis==6.4.0
 service-identity==24.2.0
