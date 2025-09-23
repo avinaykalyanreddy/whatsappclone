@@ -105,9 +105,18 @@ ASGI_APPLICATION = "whatsapp_clone.asgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Email settings
+"""
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "godsons12072004@gmail.com"
 EMAIL_HOST_PASSWORD = "uqbx nnui cxyc qmsl"  # should ideally be in env vars
+"""
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "apikey"  # must be the literal string "apikey"
+EMAIL_HOST_PASSWORD = "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"
+DEFAULT_FROM_EMAIL = "godsons12072004@gmail.com"

@@ -102,6 +102,7 @@ def signup(request):
 
                 if send_signup_email(user_obj):
                     messages.success(request,f"Verification email has been sent successfully to {user_obj.email}. Please check your inbox to verify your account.")
+                    messages.warning(request,"Check varification mail in span")
 
                 else:
                     messages.error(request,"Internal Server Error")
@@ -117,7 +118,7 @@ def signup(request):
 
 def send_signup_email(user_obj):
 
-    # try:
+  try:
     subject = "Verification mail for signup"
     link = str(uuid4())
 
@@ -133,18 +134,15 @@ def send_signup_email(user_obj):
 
     mail.content_subtype="html"
     mail.send()
-
+    print("hello")
     return True
 
 
-
-
-    """except Exception as e:
+  except Exception as e:
 
       print("Email sending failed:", e)
 
       return False
-    """
 
 
 def verify_signup_email(request,link):
