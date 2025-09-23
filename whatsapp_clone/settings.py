@@ -57,10 +57,14 @@ TEMPLATES = [
 
 # Channels / Redis
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [os.getenv('REDIS_URL', 'redis://red-d391s9ur433s73ftudi0:6379')],
+        },
+    },
 }
+
 
 
 # Database
