@@ -36,6 +36,10 @@ def home(request):
 
     user_obj = User.objects.filter(id=request.session.get("user_id",None)).first()
 
+    if not user_obj:
+
+        return redirect("users:home")
+
     friends = user_obj.get_friends()
 
 
@@ -113,7 +117,7 @@ def signup(request):
 
 def send_signup_email(user_obj):
 
-  try:
+    # try:
     subject = "Verification mail for signup"
     link = str(uuid4())
 
@@ -133,11 +137,14 @@ def send_signup_email(user_obj):
     return True
 
 
-  except Exception as e:
+
+
+    """except Exception as e:
 
       print("Email sending failed:", e)
 
       return False
+    """
 
 
 def verify_signup_email(request,link):
